@@ -1,0 +1,125 @@
+/* Tic Tac Toe (Tris) specific styles */
+
+.tris-game-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.tris-players {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.player-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--panel);
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  transition: all 0.3s;
+}
+
+.player-badge.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(212, 160, 23, 0.3);
+}
+
+.player-badge .symbol {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.player-badge .symbol.x {
+  color: #3b82f6;
+}
+
+.player-badge .symbol.o {
+  color: #ef4444;
+}
+
+.player-badge .name {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.vs {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.tris-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: var(--border);
+  padding: 8px;
+  border-radius: 16px;
+}
+
+.tris-cell {
+  width: 100px;
+  height: 100px;
+  background: var(--panel);
+  border: none;
+  border-radius: 12px;
+  font-size: 3rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tris-cell:hover:not(:disabled) {
+  background: var(--panel-light);
+  transform: scale(1.02);
+}
+
+.tris-cell:disabled {
+  cursor: not-allowed;
+}
+
+.tris-cell.x {
+  color: #3b82f6;
+}
+
+.tris-cell.o {
+  color: #ef4444;
+}
+
+.tris-cell.filled {
+  animation: cellPop 0.2s ease-out;
+}
+
+@keyframes cellPop {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 700px) {
+  .tris-cell {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+  }
+
+  .tris-players {
+    gap: 1rem;
+  }
+
+  .player-badge {
+    padding: 0.75rem 1rem;
+  }
+}

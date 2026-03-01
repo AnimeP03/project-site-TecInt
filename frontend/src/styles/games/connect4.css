@@ -1,0 +1,56 @@
+/* Connect 4 specific styles */
+
+.connect4-game-container{
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.connect4-board{
+  display: grid;
+  grid-template-columns: repeat(7, minmax(70px, 1fr));
+  gap: 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.connect4-col{
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.connect4-col:disabled{
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.connect4-col-cells{
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  gap: 0.75rem;
+}
+
+.connect4-cell{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 999px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+}
+
+.connect4-cell.r{
+  background: var(--error);
+  border-color: var(--border-light);
+}
+
+.connect4-cell.y{
+  background: var(--warning);
+  border-color: var(--border-light);
+}

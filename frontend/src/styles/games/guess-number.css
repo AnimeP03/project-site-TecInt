@@ -1,0 +1,67 @@
+/* Guess number specific styles */
+
+.guess-game-container{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.guess-actions{
+  max-width: 680px;
+  margin: 1rem auto 0;
+}
+
+.guess-row{
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.guess-input{
+  flex: 1;
+  min-width: 180px;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+
+.guess-input:focus{
+  outline: none;
+  border-color: var(--border-light);
+}
+
+.guess-hint{
+  text-align: center;
+  margin-top: 0.75rem;
+  color: var(--muted-light);
+}
+
+.guess-log{
+  max-width: 680px;
+  margin: 1rem auto 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.guess-log-row{
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.guess-log-row .name{
+  color: var(--text);
+}
+
+.guess-log-row .hint{
+  color: var(--muted-light);
+}

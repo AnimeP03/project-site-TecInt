@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PeerJS P2P Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 16px;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: 600;
+      }
+      input,
+      textarea,
+      button {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        margin-top: 6px;
+      }
+      textarea {
+        height: 180px;
+        font-family: monospace;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+      }
+      .row > * {
+        flex: 1;
+      }
+      #status {
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>PeerJS P2P Test</h2>
+    <p>Open this page in 2 tabs/devices. Copy IDs and connect.</p>
+
+    <div id="status">Status: starting...</div>
+
+    <label>My Peer ID</label>
+    <div class="row">
+      <input id="myId" readonly />
+      <button id="copyBtn" type="button">Copy</button>
+    </div>
+
+    <label>Remote Peer ID</label>
+    <input id="remoteId" placeholder="paste other peer id" />
+    <button id="connectBtn" type="button">Connect</button>
+
+    <label>Log</label>
+    <textarea id="log" readonly></textarea>
+
+    <label>Message</label>
+    <input id="msg" placeholder="type message" />
+    <button id="sendBtn" type="button">Send</button>
+
+    <script>
+      const statusEl = document.getElementById('status');
+      const myIdEl = document.getElementById('myId');
+      const remoteIdEl = document.getElementById('remoteId');
+      const logEl = document.getElementById('log');
+      const msgEl = document.getElementById('msg');
+      const copyBtn = document.getElementById('copyBtn');
+      const connectBtn = document.getElementById('connectBtn');
+      const sendBtn = document.getElementById('sendBtn');
+
+      let peer = null;
+      const conns = new Map(); // peerId -> DataConnection
+
+      function setStatus(s) {
+        statusEl.textContent = `Status: ${s}`;
+      }
+
+      function log(s) {
+        const ts = new Date().toLocaleTimeString();
+        logEl.value += `[${ts}] ${s}\n`;
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      function setupConn(c) {
+        if (!c || !c.peer) return;
+
+        // Replace existing conn to same peer
+        conns.set(c.peer, c);
+        setStatus(`connected peers: ${[...conns.values()].filter((x) => x?.open).length}`);
+
+        c.on('open', () => {
+          setStatus(`connected peers: ${[...conns.values()].filter((x) => x?.open).length}`);
+          log(`CONNECTED -> ${c.peer}`);
+        });
+
+        c.on('data', (data) => {
+          log(`PEER: ${String(data)}`);
+        });
+
+        c.on('close', () => {
+          log('CONNECTION CLOSED');
+          conns.delete(c.peer);
+          setStatus(`connected peers: ${[...conns.values()].filter((x) => x?.open).length}`);
+        });
+
+        c.on('error', (e) => {
+          console.error(e);
+          log(`CONNECTION ERROR: ${e?.type || ''} ${e?.message || e}`);
+          setStatus('connection error');
+        });
+      }
+
+      setStatus('connecting to PeerServer...');
+
+      peer = new Peer(undefined, {
+        host: window.location.hostname,
+        port: 9000,
+        path: '/peerjs',
+        secure: false,
+        debug: 2,
+        config: {
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:global.stun.twilio.com:3478' },
+          ],
+        },
+      });
+
+      peer.on('open', (id) => {
+        myIdEl.value = id;
+        setStatus('ready');
+        log(`READY. My ID = ${id}`);
+      });
+
+      peer.on('connection', (c) => {
+        log(`INCOMING from ${c.peer}`);
+        setupConn(c);
+      });
+
+      peer.on('error', (e) => {
+        console.error(e);
+        log(`PEER ERROR: ${e?.type || ''} ${e?.message || e}`);
+        setStatus('peer error');
+      });
+
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(myIdEl.value);
+          log('COPIED my id');
+        } catch {
+          myIdEl.select();
+          document.execCommand('copy');
+          log('COPIED my id');
+        }
+      });
+
+      connectBtn.addEventListener('click', () => {
+        const rid = remoteIdEl.value.trim();
+        if (!rid) return;
+        if (!peer || !peer.id) {
+          log('WAIT: peer not ready yet');
+          return;
+        }
+        if (rid === peer.id) {
+          log('ERROR: cannot connect to yourself');
+          return;
+        }
+
+        log(`CONNECTING -> ${rid}`);
+        setStatus(`connecting...`);
+        setupConn(peer.connect(rid));
+      });
+
+      function send() {
+        const text = msgEl.value;
+        if (!text) return;
+
+        const openConns = [...conns.values()].filter((c) => c?.open);
+        if (openConns.length === 0) {
+          log('ERROR: not connected');
+          return;
+        }
+
+        for (const c of openConns) {
+          try {
+            c.send(text);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        log(`ME (broadcast to ${openConns.length}): ${text}`);
+        msgEl.value = '';
+      }
+
+      sendBtn.addEventListener('click', send);
+      msgEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') send();
+      });
+    </script>
+  </body>
+</html>
