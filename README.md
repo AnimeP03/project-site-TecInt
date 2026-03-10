@@ -331,6 +331,10 @@ The UI includes quick buttons “Play as User 1 / User 2” which attempt login 
 - `test@test` / password `test`
 - `test2@test` / password `test`
 
+```bash
+curl -X POST http://localhost:4000/api/auth/register   -H "Content-Type: application/json"   -d '{"email":"test@test","password":"test","username":"Test1"}'
+```
+
 The passowords need to be hashed with bcrypt if inserted manually in database  
 Or insert via API
 

@@ -1,5 +1,7 @@
 -- GameHub Database Schema
 -- Combined migration file for all tables and constraints
+CREATE DATABASE gamehub;
+USE gamehub;
 
 -- users table
 CREATE TABLE IF NOT EXISTS `users` (
