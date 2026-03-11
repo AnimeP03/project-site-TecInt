@@ -31,7 +31,7 @@ server.listen(port, '0.0.0.0', () => {
 })
 
 // Start PeerServer with configuration from .env
-const peerServer = require('peer').PeerServer({
+const peerServer = PeerServer({
   port: peerPort,
   path: process.env.PEER_PATH ,
   host: process.env.PEER_HOST ,
